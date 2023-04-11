@@ -1,69 +1,46 @@
-########## Exemplo 03 - Aprender a utilizar os layouts ###########
+# Exemplo 02 - Adicionar uma marca d'agua nas imagens
 
 import streamlit as st
-from spacy import load, displacy
-from streamlit.components import v1 as components # gerar renderização html
+from PIL import Image, ImageFont, ImageDraw
 
-# Carregando as informações da análise de texto
-nlp = load('pt_core_news_lg')
+## Função para aplicar a marca d'agua
+def text_on_image(image, text, font_size, color):
+    img = Image.open(image)
+    font = ImageFont.truetype('arial.ttf', font_size)
+    draw = ImageDraw.Draw(img)
 
-# Criando um sidebar (Barra lateral)
-bar = st.sidebar
+    iw, ih = img.size
+    fw, fh = font.getsize(text)
 
-# Criando uma barra de escolha a ser colocada no sidebar
-escolha = bar.selectbox(
-    'Escolha uma categoria',
-    ['Entidades', 'Gramática']
-)
+    draw.text(
+        ((iw - fw) / 2, (ih - fh) / 2),
+        text,
+        fill=color,
+        font=font
+    )
 
-# Criando uma barra de texto longo
-text = st.text_area('Escreva um texto longo:')
+    img.save('last_image.jpg')
 
-# Realizando a análise do texto
-doc = nlp(text)
 
-# Se escolha Entidade, dividir em duas colunas apresentando as entidades e o tipo das mesmas
-if text and escolha == 'Entidades':
-    data = displacy.render(doc, style='ent') # spacy gera um html
-    
-    with st.expander('Dados do spacy'):
-        components.html(
-            data,
-            scrolling=True,
-            height=300
-        )
-    a, b = st.columns(2)
-    for e in doc.ents:
-        a.info(e)
-        b.warning(e.label_)
+## Streamlit
+image = st.file_uploader('Selecione a imagem', type=['jpg'])
+text = st.text_input('Sua marca dágua')
 
-# Se escolha Gramática, aparece um filtro adicional onde o usuário seleciona o tipo gramático
-## Verbo, pronome, adverbio, etc
-if text and escolha == 'Gramática':
-    filtro = bar.multiselect(
-        'Filtro',
-        ['VERB', 'PROPN', 'ADV', 'AUX'],
-        default=['VERB', 'PROPN']
-        )
-    # Apresentando os dados json
-    with st.expander('Dados do spacy'):
-        st.json(doc.to_json())
-    
-    # Criação de containers para apresentar mais de uma info ao mesmo tempo
-    container = st.container()
-    
-    a,b,c = container.columns(3) # Definindo as três colunas
+###color = st.selectbox('Cor da sua marca', ['black', 'white', 'red', 'blue'])
 
-    a.subheader('Token')
-    b.subheader('Tag')
-    c.subheader('Morph')
-    
-    # Loop para criar a estrutura para cada palavra 
-    for t in doc:
-        if t.tag_ in filtro:
-            container = st.container() # Novo container somente para organizar os dados
-            a,b,c = container.columns(3)
-            
-            a.info(t)
-            b.warning(t.tag_)
-            c.error(t.morph)
+color = st.color_picker('Escolha uma cor')
+
+font_size = st.number_input('Tamanho da fonte', min_value=50)
+
+if image:
+    result = st.button('Aplicar', 
+                       type='primary',
+                       on_click=text_on_image,
+                       args=(image, text, font_size, color)
+                       )
+    if result:
+        st.image('last_image.jpg')
+        with open('last_image.jpg', 'rb') as file:
+            st.download_button('Baixe agora mesmo sua foto com marca', file_name='image_com_marca.jpg', data=file, mime='image/jpg')
+else: 
+    st.warning('Ainda não temos imagem')
