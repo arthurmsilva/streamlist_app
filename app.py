@@ -1,46 +1,30 @@
-# Exemplo 02 - Adicionar uma marca d'agua nas imagens
+# Exemplo 01 - Criar um visualizador de arquivos com 30 linhas
 
 import streamlit as st
-from PIL import Image, ImageFont, ImageDraw
+import pandas as pd
 
-## Função para aplicar a marca d'agua
-def text_on_image(image, text, font_size, color):
-    img = Image.open(image)
-    font = ImageFont.truetype('arial.ttf', font_size)
-    draw = ImageDraw.Draw(img)
+st.markdown(
+'''
+# Exibidor de arquivos
 
-    iw, ih = img.size
-    fw, fh = font.getsize(text)
+## Suba um arquivo e vejamos o que acontece:
+'''
+)
 
-    draw.text(
-        ((iw - fw) / 2, (ih - fh) / 2),
-        text,
-        fill=color,
-        font=font
-    )
+arquivo = st.file_uploader (
+    'Suba seu arquivo aqui',
+    type=['jpg','png','csv','py','xlsx','json']
+          )
 
-    img.save('last_image.jpg')
-
-
-## Streamlit
-image = st.file_uploader('Selecione a imagem', type=['jpg'])
-text = st.text_input('Sua marca dágua')
-
-###color = st.selectbox('Cor da sua marca', ['black', 'white', 'red', 'blue'])
-
-color = st.color_picker('Escolha uma cor')
-
-font_size = st.number_input('Tamanho da fonte', min_value=50)
-
-if image:
-    result = st.button('Aplicar', 
-                       type='primary',
-                       on_click=text_on_image,
-                       args=(image, text, font_size, color)
-                       )
-    if result:
-        st.image('last_image.jpg')
-        with open('last_image.jpg', 'rb') as file:
-            st.download_button('Baixe agora mesmo sua foto com marca', file_name='image_com_marca.jpg', data=file, mime='image/jpg')
-else: 
-    st.warning('Ainda não temos imagem')
+if arquivo:
+    print(arquivo.type)
+    match arquivo.type.split('/'):
+        case 'image', _:
+            st.image(arquivo)
+        case 'text', 'x-python':
+            st.code(arquivo.read().decode())
+        case 'text', 'csv':
+            df = pd.read_csv(arquivo)
+            st.dataframe(df)
+else: st.error("Ainda não tenho arquivo")
+            
