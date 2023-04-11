@@ -1,5 +1,5 @@
 # streamlist_app
-Primeiro aplicativo e deploy utilizando Streamlist (Documentation: https://docs.streamlit.io/library/api-reference)
+Primeiro aplicativo e deploy utilizando Streamlist (Link do app: https://arthurmsilva-streamlist-app-app-21ws8g.streamlit.app/)
 
 # Projetos realizados
 - Exemplo 0 - Primeiro projeto
@@ -7,5 +7,9 @@ Primeiro aplicativo e deploy utilizando Streamlist (Documentation: https://docs.
 - Exemplo 02 - Adicionar uma marca d'agua nas imagens
 - Exemplo 03 - Análise de texto NLP com spacy
 
-## Utilizando como referência o conteúdo da live do youtube feito por Eduardo Mendes
-link: https://www.youtube.com/watch?v=Ie5ef_R_k6I
+## Referência do conteúdo
+Utilizando como referência o conteúdo da live do youtube feito por Eduardo Mendes
+(https://www.youtube.com/watch?v=Ie5ef_R_k6I)
+
+## Detalhes do Streamlit
+Documentação/API Guide: https://docs.streamlit.io/library/api-reference
